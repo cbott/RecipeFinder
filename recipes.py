@@ -8,7 +8,8 @@ def keywords_in_string(keys, text):
     count = 0
     for word in keys:
         count+=(word in text)
-    return count / len(keys)# = % that the search matches    
+    return count / len(keys)# = percentage that the search matches
+
 def read_recipe_file():
     """split file into list of recipes"""
     file = open(RECIPE_FILE, "r")
@@ -78,7 +79,7 @@ class Application(Frame):
         """display a random recipe"""
         recipe = random.choice(self.compile_search_list())
         self.results.delete(0.0, END)
-        self.results.insert(0.0, "Your random recipe: "+recipe.split("~")[0])
+        self.results.insert(0.0, "Your random recipe:\n"+recipe.split("~")[0])
         
     def compile_search_list(self):
         """create a list of recipes name+ingredients"""
