@@ -40,11 +40,16 @@ class Application(Frame):
             row = 2, column=5)
         #Output Text
         Label(self, text="Search Results:").grid(row=3, column=0)
+        #create output Text field
         self.results = Text(self, width=50, height=10,wrap=WORD)
-        #self.scroll = Scrollbar(self)
-        #self.scroll.config(command=self.results.yview)
-        #self.results.config(yscrollcommand=self.scroll.set)
         self.results.grid(row = 4, column = 0, columnspan = 6)
+        
+        self.scroll = Scrollbar(self)
+        self.scroll.config(command=self.results.yview)
+        self.scroll.grid(row=4, column=5, sticky=NS)
+        
+        self.results.config(yscrollcommand=self.scroll.set)
+        
         self.results.bind("<ButtonRelease-1>", self.open_on_click)
     def search(self):
         """search for recipes with given keywords"""
