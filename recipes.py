@@ -140,7 +140,7 @@ class AddWindow(Toplevel):
         comments = self._format(self.comments.get(0.0,END))
         if name:
             file = open(RECIPE_FILE, "a")
-            data_to_write = name+"~"+ingredients+"`"+comments+"\n"
+            data_to_write = "\n"+name+"~"+ingredients+"`"+comments
             file.write(data_to_write)
             file.close()
             self.recipe_name.delete("0",END)

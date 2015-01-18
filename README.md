@@ -20,4 +20,6 @@ It could probably be adapted for python 2 fairly easily though
 
 -adjust search accuracy down if no results are found
 
+-add ability to edit/remove recipes
+
 
