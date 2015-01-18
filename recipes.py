@@ -100,9 +100,16 @@ class Application(Frame):
         #line number of the cursor
         line = str(box.index("insert").split(".")[0])
         #get text on that line
-        line_text = box.get(line+".0", line+".end")
-        print(line_text)
+        clicked_line = box.get(line+".0", line+".end")
         
+        full_recipe = "Error loading recipe"
+        for rec in read_recipe_file():
+            if clicked_line in rec:
+                full_recipe = rec
+                break
+        #show the recipe card for the recipe that was clicked
+        card = RecipeCard(self, full_recipe)
+
 class AddWindow(Toplevel):
     """Window for adding a recipe to the database"""
     def __init__(self, master):
@@ -152,7 +159,25 @@ class AddWindow(Toplevel):
     def _format(self, string):
         """format entries for putting into database"""
         return string.strip().replace("\n","-")
+
+class RecipeCard(Toplevel):
+    """Window for adding a recipe to the database"""
+    def __init__(self, master, recipe):
+        Toplevel.__init__(self, master)
         
+        self.recipe = recipe
+        self.name = recipe.split("~")[0]
+        self.ingredients = recipe.split("~")[1].split("`")[0]
+        self.comments = recipe.split("`")[1]
+        
+        self.title(self.name)
+        self.grid()
+        self.draw()
+        self.minsize(400, 200)
+    def draw(self):
+        Label(self, text="Name of recipe: "+self.name).grid(row=0,column=0,sticky=W)
+        Label(self, text="Ingredients: "+self.ingredients).grid(row=1,column=0,sticky=W)
+        Label(self, text="Comments: "+self.comments).grid(row=2,column=0,sticky=W)
 ##run application
 root = Tk()
 root.title("Bott Family Recipe Finder")
