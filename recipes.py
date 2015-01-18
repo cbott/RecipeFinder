@@ -102,7 +102,7 @@ class Application(Frame):
         #get text on that line
         clicked_line = box.get(line+".0", line+".end")
         
-        full_recipe = "Error loading recipe"
+        full_recipe = "Error loading recipe~`"
         for rec in read_recipe_file():
             if clicked_line in rec:
                 full_recipe = rec
