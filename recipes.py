@@ -16,7 +16,8 @@ def read_recipe_file():
     file = open(RECIPE_FILE, "r")
     all_results = file.read().lower()
     file.close()
-    return all_results.split("\n")
+    all_results = all_results.split("\n")
+    return all_results
     
 class Application(Frame):
     """Recipe finder application window"""
@@ -34,6 +35,7 @@ class Application(Frame):
         self.search_params = Text(self, width = 50, height= 3,
                                   wrap = WORD)
         self.search_params.grid(row=1, column=0, columnspan = 5, rowspan=2)
+        self.search_params.bind("<Return>", self.search)
         #"search" button
         Button(self, text = "Search Recipes", command = self.search).grid(
             row = 1, column=5)
@@ -53,7 +55,7 @@ class Application(Frame):
         self.results.config(yscrollcommand=self.scroll.set)
         
         self.results.bind("<ButtonRelease-1>", self.open_on_click)
-    def search(self):
+    def search(self, *args):
         """search for recipes with given keywords"""
         #retreive search keywords
         raw_params = self.search_params.get(0.0, END).lower()
@@ -250,7 +252,7 @@ class RecipeCard(Toplevel):
          self.editor = EditWindow(self, self.name, self.ingredients,
                                   self.comments)
     def delete(self):
-        if tkMessage.askokcancel("Delete this recipe","Are you sure you would like to delete this recipe?"):
+        if tkMessage.askokcancel("Delete this recipe?","Are you sure you would like to delete this recipe?"):
             all_recipes = read_recipe_file()
             for index, rec in enumerate(all_recipes):
                 if rec == self.recipe:
