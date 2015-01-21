@@ -20,7 +20,8 @@ def read_recipe_file():
 class Application(Frame):
     """Recipe finder application window"""
     def __init__(self, master):
-        super(Application, self).__init__(master)
+        #super(Application, self).__init__(master)
+        Frame.__init__(self, master)
         self.grid()
         self.create_fields()
     def create_fields(self):
@@ -175,9 +176,26 @@ class RecipeCard(Toplevel):
         self.draw()
         self.minsize(400, 200)
     def draw(self):
-        Label(self, text="Name of recipe: "+self.name).grid(row=0,column=0,sticky=W)
-        Label(self, text="Ingredients: "+self.ingredients).grid(row=1,column=0,sticky=W)
-        Label(self, text="Comments: "+self.comments).grid(row=2,column=0,sticky=W)
+        #Label(self, text="Name of recipe: "+self.name).grid(row=0,column=0,sticky=W)
+        #Label(self, text="Ingredients: "+self.ingredients).grid(row=1,column=0,sticky=W)
+        #Label(self, text="Comments: "+self.comments).grid(row=2,column=0,sticky=W)
+        self.can = Canvas(self, width = 500, height = 300, bg="white")
+        self.can.grid(row = 0, column=0)
+        #draw card graphic
+        self.can.create_line(0,35,500,35,fill = "blue2", width=2.0)
+        for y in range(65, 300, 30):
+            self.can.create_line(0,y,500,y,fill = "red2", width=2.0)
+        #show text
+        self.can.create_text(250,15, text=self.name.title(), font="arial 18")
+        self.can.create_text(5,40, text="Ingredients:",
+                             width=500, anchor = NW, font="arial 14")
+        self.can.create_text(5,70, text=self.ingredients,
+                             width=500, anchor = NW, font="arial 14")
+        self.can.create_text(5,160, text="Comments:",
+                             width=500, anchor = NW, font="arial 14")
+        self.can.create_text(5,190, text=self.comments,
+                             width=500, anchor = NW, font=("Comic Sans MS", 14))
+        
 ##run application
 root = Tk()
 root.title("Bott Family Recipe Finder")
