@@ -105,7 +105,7 @@ class Application(Frame):
         
         full_recipe = "Error loading recipe~`"
         for rec in read_recipe_file():
-            if clicked_line in rec:
+            if clicked_line == rec.split("~")[0]:
                 full_recipe = rec
                 break
         #show the recipe card for the recipe that was clicked
@@ -160,7 +160,55 @@ class AddWindow(Toplevel):
     def _format(self, string):
         """format entries for putting into database"""
         return string.strip().replace("\n","-")
+    
+class EditWindow(Toplevel):
+    """Window for editing a recipe already in the database"""
+    def __init__(self, master, name, ingredients, comments):
+        Toplevel.__init__(self, master)
 
+        self.name = name
+        self.ingredients = ingredients
+        self.comments = comments
+        
+        self.title('Recipe Editor')
+        self.grid()
+        self.draw()
+        self.minsize(200, 200)
+    def draw(self):
+        #Recipe name
+        Label(self, text="Name of recipe: " + self.name).grid(row=0,column=0,sticky=W)
+        #Ingredients
+        Label(self, text="Key ingredients:").grid(row=1,column=0,sticky=W)
+        self.ingredients_field = Text(self, width=40,height=5,wrap=WORD)
+        self.ingredients_field.grid(row=2,column=0,columnspan=6)
+        self.ingredients_field.insert(0.0, self.ingredients)
+        #comments
+        Label(self, text="Additional comments:").grid(row=3,column=0,sticky=W)
+        self.comments_field = Text(self, width=20,height=4,wrap=WORD)
+        self.comments_field.grid(row=4,column=0,columnspan=6)
+        self.comments_field.insert(0.0, self.comments)
+        #edit button
+        Button(self, text="Edit Recipe", command=self.overwrite).grid(
+            row=5,column=0,columnspan=6)
+    def overwrite(self):
+        ing = self._format(self.ingredients_field.get(0.0,END))
+        com = self._format(self.comments_field.get(0.0,END))
+        data_to_write = self.name+"~"+ing+"`"+com
+
+        all_recipes = read_recipe_file()
+        for index, rec in enumerate(all_recipes):
+            if rec.split("~")[0] == self.name:
+                all_recipes[index] = data_to_write#replace current
+
+        file = open(RECIPE_FILE, "w")
+        for rec in all_recipes:
+            file.write("\n"+rec)
+        file.close()
+        self.destroy()
+        
+    def _format(self, string):
+        """format entries for putting into database"""
+        return string.strip().replace("\n","-")
 class RecipeCard(Toplevel):
     """Window for adding a recipe to the database"""
     def __init__(self, master, recipe):
@@ -174,11 +222,13 @@ class RecipeCard(Toplevel):
         self.title(self.name)
         self.grid()
         self.draw()
-        self.minsize(400, 200)
+        self.resizable(0,0)
+        self.bar = Menu(self)
+        self.bar.add_command(label="Edit this recipe", command = self.edit)
+        self.bar.add_command(label="Delete this recipe", command = self.delete)
+        self.config(menu = self.bar)
     def draw(self):
-        #Label(self, text="Name of recipe: "+self.name).grid(row=0,column=0,sticky=W)
-        #Label(self, text="Ingredients: "+self.ingredients).grid(row=1,column=0,sticky=W)
-        #Label(self, text="Comments: "+self.comments).grid(row=2,column=0,sticky=W)
+        """draw text and graphics for recipe card"""
         self.can = Canvas(self, width = 500, height = 300, bg="white")
         self.can.grid(row = 0, column=0)
         #draw card graphic
@@ -195,7 +245,11 @@ class RecipeCard(Toplevel):
                              width=500, anchor = NW, font="arial 14")
         self.can.create_text(5,190, text=self.comments,
                              width=500, anchor = NW, font=("Comic Sans MS", 14))
-        
+    def edit(self):
+         self.editor = EditWindow(self, self.name, self.ingredients,
+                                  self.comments)
+    def delete(self):
+        print(self.name+"~"+self.ingredients+"`"+self.comments)
 ##run application
 root = Tk()
 root.title("Bott Family Recipe Finder")
