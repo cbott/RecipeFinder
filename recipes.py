@@ -1,4 +1,5 @@
 from tkinter import *
+import tkinter.messagebox as tkMessage
 import random
 
 RECIPE_FILE = "recipes.txt"
@@ -249,7 +250,18 @@ class RecipeCard(Toplevel):
          self.editor = EditWindow(self, self.name, self.ingredients,
                                   self.comments)
     def delete(self):
-        print(self.name+"~"+self.ingredients+"`"+self.comments)
+        if tkMessage.askokcancel("Delete this recipe","Are you sure you would like to delete this recipe?"):
+            all_recipes = read_recipe_file()
+            for index, rec in enumerate(all_recipes):
+                if rec == self.recipe:
+                    del all_recipes[index]#delete the recipe
+
+            file = open(RECIPE_FILE, "w")
+            for rec in all_recipes:
+                file.write("\n"+rec)
+            file.close()
+            self.destroy()
+        
 ##run application
 root = Tk()
 root.title("Bott Family Recipe Finder")
