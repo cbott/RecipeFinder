@@ -135,7 +135,7 @@ class AddWindow(Toplevel):
         self.ingredients.grid(row=2,column=0,columnspan=6)
         #comments
         Label(self, text="Additional comments:").grid(row=3,column=0,sticky=W)
-        self.comments = Text(self, width=20,height=4,wrap=WORD)
+        self.comments = Text(self, width=30,height=4,wrap=WORD)
         self.comments.grid(row=4,column=0,columnspan=6)
         #add recipe
         Button(self, text="Add to recipe box", command=self.add).grid(
@@ -183,7 +183,7 @@ class EditWindow(Toplevel):
         self.ingredients_field.insert(0.0, self.ingredients)
         #comments
         Label(self, text="Additional comments:").grid(row=3,column=0,sticky=W)
-        self.comments_field = Text(self, width=20,height=4,wrap=WORD)
+        self.comments_field = Text(self, width=30,height=4,wrap=WORD)
         self.comments_field.grid(row=4,column=0,columnspan=6)
         self.comments_field.insert(0.0, self.comments)
         #edit button
@@ -245,19 +245,19 @@ class RecipeCard(Toplevel):
         
     def draw(self):
         """draw text and graphics for recipe card"""
-        self.can = Canvas(self, width = 500, height = 300, bg="#F0F0F0")
+        self.can = Canvas(self, width = 500, height = 300, bg="#F9F9F9")
         self.can.grid(row = 0, column=0)
         #draw card graphic
-        self.can.create_line(0,35,500,35,fill = "blue2", width=2.0)
-        for y in range(65, 300, 30):
-            self.can.create_line(0,y,500,y,fill = "red2", width=2.0)
+        self.can.create_line(0,38,500,38,fill = "red2", width=2.0)
+        for y in range(63, 300, 25):
+            self.can.create_line(0,y,500,y,fill = "blue2", width=2.0)
         #show text
-        self.can.create_text(250,15, text=self.name.title(), font="arial 18")
+        self.can.create_text(250,17, text=self.name.title(), font="arial 18")
         self.can.create_text(5,40, text="Ingredients:",
                              width=500, anchor = NW, font="arial 14")
-        self.can.create_text(5,70, text=self.ingredients,
-                             width=500, anchor = NW, font="arial 14")
-        self.can.create_text(5,160, text="Comments:",
+        self.can.create_text(5,65, text=self.ingredients,
+                             width=500, anchor = NW, font=("Comic Sans MS", 14))
+        self.can.create_text(5,163, text="Comments:",
                              width=500, anchor = NW, font="arial 14")
         self.can.create_text(5,190, text=self.comments,
                              width=500, anchor = NW, font=("Comic Sans MS", 14))
@@ -272,7 +272,7 @@ class RecipeCard(Toplevel):
         if tkMessage.askokcancel("Delete this recipe?","Are you sure you would like to delete this recipe?"):
             all_recipes = read_recipe_file()
             for index, rec in enumerate(all_recipes):
-                if rec == self.recipe:
+                if rec == self.full_recipe:
                     del all_recipes[index]#delete the recipe
 
             file = open(RECIPE_FILE, "w")
