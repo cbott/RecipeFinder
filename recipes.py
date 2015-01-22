@@ -106,13 +106,8 @@ class Application(Frame):
         #get text on that line
         clicked_line = box.get(line+".0", line+".end")
         
-        full_recipe = "Error loading recipe~`"
-        for rec in read_recipe_file():
-            if clicked_line == rec.split("~")[0]:
-                full_recipe = rec
-                break
         #show the recipe card for the recipe that was clicked
-        card = RecipeCard(self, full_recipe)
+        card = RecipeCard(self, clicked_line)
 
 class AddWindow(Toplevel):
     """Window for adding a recipe to the database"""
@@ -168,6 +163,7 @@ class EditWindow(Toplevel):
     """Window for editing a recipe already in the database"""
     def __init__(self, master, name, ingredients, comments):
         Toplevel.__init__(self, master)
+        self.master = master
 
         self.name = name
         self.ingredients = ingredients
@@ -204,10 +200,14 @@ class EditWindow(Toplevel):
                 all_recipes[index] = data_to_write#replace current
 
         file = open(RECIPE_FILE, "w")
+        sep = ""
         for rec in all_recipes:
-            file.write("\n"+rec)
+            file.write(sep+rec)
+            sep="\n"
         file.close()
-        self.destroy()
+
+        self.master.update()#re-draw the recipe card
+        self.destroy()#close the editing window
         
     def _format(self, string):
         """format entries for putting into database"""
@@ -215,24 +215,37 @@ class EditWindow(Toplevel):
 class RecipeCard(Toplevel):
     """Window for adding a recipe to the database"""
     def __init__(self, master, recipe):
+        """takes recipe name, shows recipe card with all info"""
         Toplevel.__init__(self, master)
+
+        self.requested_recipe = recipe
         
-        self.recipe = recipe
-        self.name = recipe.split("~")[0]
-        self.ingredients = recipe.split("~")[1].split("`")[0]
-        self.comments = recipe.split("`")[1]
-        
-        self.title(self.name)
         self.grid()
-        self.draw()
+        self.load_recipe(self.requested_recipe)
         self.resizable(0,0)
         self.bar = Menu(self)
         self.bar.add_command(label="Edit this recipe", command = self.edit)
         self.bar.add_command(label="Delete this recipe", command = self.delete)
         self.config(menu = self.bar)
+    def load_recipe(self, name):
+        """given a recipe name, find all info for it"""
+        self.full_recipe = "Error loading recipe~`"
+        for rec in read_recipe_file():
+            if self.requested_recipe == rec.split("~")[0]:
+                self.full_recipe = rec
+                break
+
+        self.name = self.full_recipe.split("~")[0]
+        self.ingredients = self.full_recipe.split("~")[1].split("`")[0]
+        self.comments = self.full_recipe.split("`")[1]
+        
+        self.title(self.name)#set window title
+
+        self.draw()
+        
     def draw(self):
         """draw text and graphics for recipe card"""
-        self.can = Canvas(self, width = 500, height = 300, bg="white")
+        self.can = Canvas(self, width = 500, height = 300, bg="#F0F0F0")
         self.can.grid(row = 0, column=0)
         #draw card graphic
         self.can.create_line(0,35,500,35,fill = "blue2", width=2.0)
@@ -248,6 +261,10 @@ class RecipeCard(Toplevel):
                              width=500, anchor = NW, font="arial 14")
         self.can.create_text(5,190, text=self.comments,
                              width=500, anchor = NW, font=("Comic Sans MS", 14))
+    def update(self):
+        """redraw the card"""
+        self.can.delete("all")
+        self.load_recipe(self.requested_recipe)
     def edit(self):
          self.editor = EditWindow(self, self.name, self.ingredients,
                                   self.comments)
@@ -259,8 +276,10 @@ class RecipeCard(Toplevel):
                     del all_recipes[index]#delete the recipe
 
             file = open(RECIPE_FILE, "w")
+            sep=""
             for rec in all_recipes:
-                file.write("\n"+rec)
+                file.write(sep+rec)
+                sep="\n"
             file.close()
             self.destroy()
         
