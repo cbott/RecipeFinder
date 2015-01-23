@@ -29,7 +29,7 @@ class Application(Frame):
     def create_fields(self):
         """create application input fields"""
         #instructions
-        Label(self, text="Search recipes by keyword/ingredient. Separate multiple items with commas:").grid(
+        Label(self, text="Search recipes by keyword/ingredient. Separate multiple keywords with commas:").grid(
             row=0, column=0, columnspan=6)
         #Keyword input field
         self.search_params = Text(self, width = 50, height= 3,
@@ -40,10 +40,10 @@ class Application(Frame):
         Button(self, text = "Search Recipes", command = self.search).grid(
             row = 1, column=5)
         #random recipe button
-        Button(self, text = "Random Recipe!", command = self.random).grid(
+        Button(self, text = "Random Recipe", command = self.random).grid(
             row = 2, column=5)
         #Output Text
-        Label(self, text="Search Results:").grid(row=3, column=0)
+        Label(self, text="Search Results: Click a recipe name to open").grid(row=3, column=0, columnspan = 4)
         #create output Text field
         self.results = Text(self, width=50, height=10,wrap=WORD)
         self.results.grid(row = 4, column = 0, columnspan = 6)
@@ -227,6 +227,7 @@ class RecipeCard(Toplevel):
         self.bar.add_command(label="Edit this recipe", command = self.edit)
         self.bar.add_command(label="Delete this recipe", command = self.delete)
         self.config(menu = self.bar)
+        self.focus_force()
     def load_recipe(self, name):
         """given a recipe name, find all info for it"""
         self.full_recipe = "Error loading recipe~`"
@@ -239,7 +240,7 @@ class RecipeCard(Toplevel):
         self.ingredients = self.full_recipe.split("~")[1].split("`")[0]
         self.comments = self.full_recipe.split("`")[1]
         
-        self.title(self.name)#set window title
+        self.title(self.name.title())#set window title
 
         self.draw()
         
@@ -269,7 +270,9 @@ class RecipeCard(Toplevel):
          self.editor = EditWindow(self, self.name, self.ingredients,
                                   self.comments)
     def delete(self):
-        if tkMessage.askokcancel("Delete this recipe?","Are you sure you would like to delete this recipe?"):
+        confirm = tkMessage.askokcancel("Delete this recipe?",
+                                        "Are you sure you would like to delete this recipe?")
+        if confirm:#user confirms delete
             all_recipes = read_recipe_file()
             for index, rec in enumerate(all_recipes):
                 if rec == self.full_recipe:
@@ -282,7 +285,8 @@ class RecipeCard(Toplevel):
                 sep="\n"
             file.close()
             self.destroy()
-        
+        else:#user cancels the delete
+            self.focus_force()
 ##run application
 root = Tk()
 root.title("Bott Family Recipe Finder")
@@ -291,8 +295,9 @@ app = Application(root)
 add_recipe = AddWindow(app)
 add_recipe.withdraw()
 #create menu bar
-menu_bar = Menu(root, tearoff=False)
+menu_bar = Menu(root)
 menu_bar.add_command(label="Add Recipe", command = add_recipe.show)
 root.config(menu=menu_bar)
+root.focus_force()
 #run
 root.mainloop()
