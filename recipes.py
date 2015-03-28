@@ -72,7 +72,7 @@ class Application(Frame):
         search_results = []
         for rec in recipes_searchable:
             #only include results that fit the search
-            if keywords_in_string(keyword_list,rec)==1:
+            if keywords_in_string(keyword_list,rec) == 1:
                 search_results.append(rec)
         #show just the names
         names = ""
@@ -141,20 +141,32 @@ class AddWindow(Toplevel):
         Button(self, text="Add to recipe box", command=self.add).grid(
             row=5,column=0,columnspan=6)
     def add(self):
-        name = self._format(self.recipe_name.get())
+        name = self._format(self.recipe_name.get()).lower()
         ingredients = self._format(self.ingredients.get(0.0,END))
         comments = self._format(self.comments.get(0.0,END))
         if name:
-            file = open(RECIPE_FILE, "a")
-            data_to_write = "\n"+name+"~"+ingredients+"`"+comments
-            file.write(data_to_write)
-            file.close()
-            self.recipe_name.delete("0",END)
-            self.ingredients.delete(0.0,END)
-            self.comments.delete(0.0,END)
-            self.comments.insert(0.0, "Recipe added!")
+            #check that the recipe doesn't already exist
+            exists = False
+            for rec in read_recipe_file():
+                    if name == rec.split("~")[0]:
+                        popup = tkMessage.showinfo("This recipe already exists",
+                                "Another recipe with the same name already exists.\nTry searching for it and using the edit feature")
+                        exists = True
+                        self.focus_force()
+                        break
+            if not exists:
+                file = open(RECIPE_FILE, "a")
+                data_to_write = "\n"+name+"~"+ingredients+"`"+comments
+                file.write(data_to_write)
+                file.close()
+                self.recipe_name.delete("0",END)
+                self.ingredients.delete(0.0,END)
+                self.comments.delete(0.0,END)
+                self.comments.insert(0.0, "Recipe added!")
         else:
-            self.comments.insert(0.0, "Please fill in a recipe name")
+            popup = tkMessage.showwarning("No recipe name specified",
+                                "Please enter a recipe name")
+            self.focus_force()
     def _format(self, string):
         """format entries for putting into database"""
         return string.strip().replace("\n","-")

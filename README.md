@@ -22,6 +22,6 @@ It could probably be adapted for python 2 fairly easily though
 
 ✓add ability to edit/remove recipes
 
--prevent adding a recipe twice
+✓prevent adding a recipe twice
 
 -combine edit/add/delete features
