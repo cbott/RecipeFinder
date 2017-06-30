@@ -1,17 +1,18 @@
 # RecipeFinder
 A python tkinter window used for searching and storing recipes
 
-##Purpose
--Opens a window with a search field and results field.
+##Features
+-Easy to use GUI
 
--Keywords in search field are checked against known recipes (stored in "recipes.txt")
+-Search for keywords across all recipes
 
--Results that contain all keywords are displayed
+-Add, edit, and remove recipes
 
--Clicking "add recipe" on the top bar opens a new window that allows you to add a new recipe to the save file
+-Keyboard shortcuts
 
-###Only tested with Python 3.3!
-It could probably be adapted for python 2 fairly easily though
+###Only tested with Python 2.7
+Latest update ported code from python 3.3 to python 2.7
+May still work with Python 3 but untested
 
 ##Future plans
 ✓When a certain result is clicked it will open a new window displaying ingredients and other info for that recipe
@@ -24,4 +25,6 @@ It could probably be adapted for python 2 fairly easily though
 
 ✓prevent adding a recipe twice
 
--combine edit/add/delete features
+✓combine edit/add/delete features
+
+-Fullscreen viewing mode
