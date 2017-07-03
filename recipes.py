@@ -113,7 +113,8 @@ class Application(Frame):
         clicked_line = box.get(line+".0", line+".end")
         
         #show the recipe card for the recipe that was clicked
-        card = RecipeCard(self, clicked_line)
+        if clicked_line in load_recipe_file():
+            card = RecipeCard(self, clicked_line)
 
 class AddWindow(Toplevel):
     """Window for adding a recipe to the database"""
@@ -172,6 +173,8 @@ class RecipeCard(Toplevel):
         self.load_recipe()
 
         self.focus_force()
+
+        self.protocol("WM_DELETE_WINDOW", self.close_request)
 
     def load_recipe(self):
         """Load recipe and show contents in window"""
@@ -237,6 +240,7 @@ class RecipeCard(Toplevel):
             self.set_view_mode()
 
     def delete(self):
+        """ Delete the current recipe if the user confirms the action """
         confirm = tkMessage.askokcancel("Delete?", "Are you sure you would like to delete this recipe?")
         if confirm:#user confirms delete
             all_recipes = load_recipe_file()
@@ -246,13 +250,22 @@ class RecipeCard(Toplevel):
         else: #user cancels the delete
             self.focus_force()
 
+    def close_request(self):
+        if self.mode == "edit":
+            confirm = tkMessage.askyesnocancel("Save Before Closing?", "Would you like to save this recipe before closing?")
+            self.focus_force()
+            if confirm is None:
+                # cancel
+                return
+            elif confirm == True:
+                # Yes
+                set_view_mode();
+        self.destroy()
+
 ##run application
 root = Tk()
 root.title("Colin's Recipe Book")
 app = Application(root)
-#create add window
-#add_recipe = AddWindow(app)
-#add_recipe.withdraw()
 #create menu bar
 menu_bar = Menu(root)
 menu_bar.add_command(label="New Recipe", command = lambda: AddWindow(root), underline=0)
