@@ -259,7 +259,7 @@ class RecipeCard(Toplevel):
                 return
             elif confirm == True:
                 # Yes
-                set_view_mode();
+                self.set_view_mode();
         self.destroy()
 
 ##run application
