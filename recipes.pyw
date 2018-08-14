@@ -77,21 +77,21 @@ class Application(Frame):
         self.results.bind("<ButtonRelease-1>", self.open_on_click)
     def search(self, *args):
         """search for recipes with given keywords"""
-        #retreive search keywords
+        # retreive search keywords
         raw_params = self.search_params.get(0.0, END).lower()
         keywords = [x.strip() for x in raw_params.split(',')]
 
-        ##search code
+        # load recipes
         recipes = load_recipe_file()
 
-        #perform search
+        # perform search
         search_results = []
         for rec in recipes:
             text_to_search = rec + " " + recipes[rec]["Text"]
-            #only include results that fit the search
+            # only include results that fit the search
             if keywords_in_string(keywords,text_to_search) == 1:
                 search_results.append(rec)
-        #display search results
+        # display search results
         self.results.delete(0.0, END)
         if search_results:
             self.results.insert(0.0, "\n".join(search_results))
@@ -247,13 +247,15 @@ class RecipeCard(Toplevel):
 
     def delete(self):
         """ Delete the current recipe if the user confirms the action """
-        confirm = tkMessage.askokcancel("Delete?", "Are you sure you would like to delete this recipe?")
-        if confirm:#user confirms delete
+        confirm = tkMessage.askokcancel("Delete?", 'Are you sure you would like to delete recipe "{}"?'.format(self.recipe_name))
+        if confirm:
+            # user confirms delete
             all_recipes = load_recipe_file()
             del all_recipes[self.recipe_name] #delete the recipe
             overwrite_file(all_recipes)
             self.destroy()
-        else: #user cancels the delete
+        else:
+            # user cancels delete
             self.focus_force()
 
     def close_request(self):
