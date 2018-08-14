@@ -15,12 +15,14 @@ RECIPE_FILE = "stored_recipes.dat"
 # Data structure:
 # { "Recipe 1 Name" : { "Text" : "instructions..."} }
 
+
 def keywords_in_string(keys, text):
     """takes a list of words and tells how many of them are in the string"""
     count = 0
     for word in keys:
         count+=(word in text)
-    return count / len(keys)# = percentage that the search matches
+    return count / len(keys) #  = percentage that the search matches
+
 
 def load_recipe_file():
     """Open the recipe data file and return the corresponding dictionary"""
@@ -31,10 +33,12 @@ def load_recipe_file():
     except IOError:
         return {}
 
+
 def overwrite_file(new_data):
     with open(RECIPE_FILE, "wb") as f:
-        pickle.dump(new_data, f)
-    
+        pickle.dump(new_data, f, protocol=2)
+
+
 class Application(Frame):
     """Recipe finder application window"""
     def __init__(self, master):
@@ -63,13 +67,13 @@ class Application(Frame):
         #create output Text field
         self.results = Text(self, width=50, height=10,wrap=WORD)
         self.results.grid(row = 4, column = 0, columnspan = 6)
-        
+
         self.scroll = Scrollbar(self)
         self.scroll.config(command=self.results.yview)
         self.scroll.grid(row=4, column=5, sticky=NS)
-        
+
         self.results.config(yscrollcommand=self.scroll.set)
-        
+
         self.results.bind("<ButtonRelease-1>", self.open_on_click)
     def search(self, *args):
         """search for recipes with given keywords"""
@@ -80,7 +84,7 @@ class Application(Frame):
         ##search code
         recipes = load_recipe_file()
 
-        #perform search    
+        #perform search
         search_results = []
         for rec in recipes:
             text_to_search = rec + " " + recipes[rec]["Text"]
@@ -111,10 +115,11 @@ class Application(Frame):
         line = str(box.index("insert").split(".")[0])
         #get text on that line
         clicked_line = box.get(line+".0", line+".end")
-        
+
         #show the recipe card for the recipe that was clicked
         if clicked_line in load_recipe_file():
             card = RecipeCard(self, clicked_line)
+
 
 class AddWindow(Toplevel):
     """Window for adding a recipe to the database"""
@@ -154,14 +159,15 @@ class AddWindow(Toplevel):
         """format entries for putting into database"""
         return string.strip()
 
+
 class RecipeCard(Toplevel):
-    """Window for adding a recipe to the database"""
+    """Window for viewing and editing recipe data"""
     def __init__(self, master, recipe):
         """takes recipe name, shows recipe card with all info"""
         Toplevel.__init__(self, master)
 
         self.recipe_name = recipe
-        
+
         #self.resizable(0,0)
         self.bar = Menu(self)
         self.bar.add_command(label="Edit", command = self.edit, underline=0)
@@ -262,16 +268,16 @@ class RecipeCard(Toplevel):
                 self.set_view_mode();
         self.destroy()
 
-##run application
-root = Tk()
-root.title("Colin's Recipe Book")
-app = Application(root)
-#create menu bar
-menu_bar = Menu(root)
-menu_bar.add_command(label="New Recipe", command = lambda: AddWindow(root), underline=0)
-root.bind("<Control-n>", lambda e: AddWindow(root))
 
-root.config(menu=menu_bar)
-root.focus_force()
-# run
-root.mainloop()
+if __name__ == "__main__":
+    root = Tk()
+    root.title("Colin's Recipe Book")
+    app = Application(root)
+    # create menu bar
+    menu_bar = Menu(root)
+    menu_bar.add_command(label="New Recipe", command = lambda: AddWindow(root), underline=0)
+    root.bind("<Control-n>", lambda e: AddWindow(root))
+    root.config(menu=menu_bar)
+
+    root.focus_force()
+    root.mainloop()
